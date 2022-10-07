@@ -1,0 +1,124 @@
+Most important data 
+
+- create and  control encryption keys 
+- is intengreated wiht other AWS services , Amazon Work Emaik, RDS, EBC S3
+
+CMK Customer Mseter Key
+- alias
+- creation date
+- description
+- key state
+- key material (either cumore proveded or AWS provided) - can never be exproted
+Two types CMK done by KMS or Custoem by open ssl
+
+Setup a Customer Master Key
+- create alias and description
+- Choose material option
+- Define Key Administrative Permissions
+	- IAMusers/roles tha can administer(but not use) the key through the KMS API)
+- Define Key Usage Permissions 
+	- IAM user/roles tha tcan use the key to encrypt and decrypt data. 
+	
+
+
+Why import your own key material:
+- Prove that randommess meets your requriments (Compilande)
+- Extend your exisign prosses to AWS
+	-To be able to delete key material without a 7-30 days wait. Then be able to import them again
+- To be resilient to AWS failure by storing keys outside AWS.*
+- 
+
+
+How to import your own key material:
+- create CMK wiht no key material
+- Download a public key (wrapping key ) and import token
+- Encrypt the key material
+- Import the key material 
+
+
+COSIDERATION FOR IMPORTED KEY MATERIALS
+- Awailability and durability is different 
+- Secure key generation is up to you
+- No automatic rotation
+- Ciphertexts are not portable betweekn CMKs
+- 
+
+WE CANNOT USE KMS TO GENERATE KEY PAIS(PRIVATE/PUBLIC) TO EC2
+
+We can import Pulic Key into EC2 Key Pairs, but we cannot use EC2 Key Pairs to encrypt EBS volume, we must use KMS or third party application/tools. 
+
+We can use KMS to encrypt EBS volumes and it is possible to encrypt root device volume
+
+To encrypt root device volume create an AMI. The initial AMI will be unencrypted, but you can then copy it and in doing so ecrypt it.
+
+You can change ecnryption keys from amazon managed to customer master key.
+
+you can copy from one region to another and makes these copies encrypted, but you MUST use kes in the destination region to do the encryption.
+
+You can view the public key by going to .ssh/authroized_keys
+You can also view the public key ussing the EC2 instace metadata
+curl http://169/254/169/254/lates/meta-data/poulic-keys/0/openssh-key
+
+You can have multiple public keys attached to an EC2 intance
+
+You can now add role to existing EC2 instances.
+
+
+Deleting Key Pail in the console will not delete form the instaces meta data.
+
+If you lose a KP (Pulblic/Private), take a snapshot fo the EC2 instace and the deploy it as a new instance. 
+This will append a new public key to authorized_keys
+
+
+Beause you cannot export keys from KMS and because the Amazon is involded in the generation of the key, you cannot use the KMS wiht SSH for EC2.
+With Cloud HSM you can however because you can export keys from Cloud HSM
+
+
+WAF 3 behaviours:
+
+allows all requests except ones that you specify
+block all requests except ones that you specify
+Count all requests that match the properties that you specify
+
+What we can block
+- IP that requested orginate from
+- Cuntry that requested orginate from 
+- Values in the reques header 
+- String that appers in requests / strings that match regular expression( patterns)
+- Lenght of request
+- Presence of SQL code
+- Presence XSS code
+
+
+Application Load Balancers integreated with WAF at the regional level,
+ and Cloudfron at the GLOBAL LEVEL.
+
+You need to associated your rules to AWS resources in order to be able to make it work
+
+You can use WAF to protec sites no hosted in AWS via Cloud Front . CloudFront supports custom orgin outside of AWS. ipv4/ipv6 supported. ip blocker for /8/16/24/32
+
+
+AWS SHIELD 
+Turned ON by default
+3000$/month  if you want advanced options.
+
+Advanced options give you an incident reponse team in depth reportin
+You will not pay if you victim of the attack.
+
+
+DEDICATED ISNTACE AND DEDICATED HOST
+
+both have dedicated hardware
+If you have specific regulatory requriments or licensing conditios, choose dedicated host.
+Dedicated instances can share the same hardware with other AWS isntaces from the SAME account that are NOT dedicated
+Dedicated hosts give you much better visibility in to things like sockets cores and hsots.
+
+
+	HYPERVIORS
+Choose the HVM over PV where possible
+PV is isolated by layers
+Only AWS Administrator have access to hypervisor
+All stored memory and RAM is scrubbed before is delivered to you.
+
+
+
