@@ -1,0 +1,33 @@
+
+
+================================================================
+IMPORT MY KEY
+================================================================
+aws ec2 import-key-pair --key-name "abc" --public-key-material fileb://mka.pub
+{
+    "KeyFingerprint": "3c:5b:3a:8c:1a:9a:59:87:b6:d5:4b:03:80:55:ef:0f",
+    "KeyName": "abc",
+    "KeyPairId": "key-0a558c4e02392e7e0"
+}
+
+
+================================================================
+CREATE SECURITY GROUP
+================================================================
+
+aws ec2 create-security-group --group-name MySecurityGroup --description "MKA-SecurityGroup"
+{
+    "GroupId": "sg-069df29b58561fa78"
+}
+
+
+================================================================
+ADD RULE TO THE SECURITY GROUP
+================================================================
+
+aws ec2 authorize-security-group-ingress --group-id sg-069df29b58561fa78 --protocol tcp --port 2233  --cidr 0.0.0.0/0
+
+================================================================
+================================================================
+
+
