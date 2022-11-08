@@ -44,5 +44,85 @@ aws ec2 authorize-security-group-ingress --group-id sg-069df29b58561fa78 --proto
 
 ================================================================
 ================================================================
+aws ec2 create-vpc --cidr-block 10.0.0.0/16 --query Vpc.VpcId --output text
+
+aws ec2 create-subnet --vpc-id vpc-2f09a348 --cidr-block 10.0.1.0/24
+
+
+aws ec2 create-subnet --vpc-id vpc-2f09a348 --cidr-block 10.0.0.0/24
+
+
+
+aws ec2 create-internet-gateway --query InternetGateway.InternetGatewayId --output text
+
+aws ec2 attach-internet-gateway --vpc-id vpc-2f09a348 --internet-gateway-id igw-1ff7a07b
+
+aws ec2 create-route-table --vpc-id vpc-2f09a348 --query RouteTable.RouteTableId --output text
+aws ec2 create-route --route-table-id rtb-c1c8faa6 --destination-cidr-block 0.0.0.0/0 --gateway-id igw-1ff7a07b
+
+aws ec2 describe-route-tables --route-table-id rtb-c1c8faa6
+
+aws ec2 describe-route-tables --route-table-id rtb-c1c8faa6
+
+aws ec2 describe-subnets --filters "Name=vpc-id,Values=vpc-2f09a348" --query "Subnets[*].{ID:SubnetId,CIDR:CidrBlock}"
+
+aws ec2 associate-route-table  --subnet-id subnet-b46032ec --route-table-id rtb-c1c8faa6
+
+aws ec2 modify-subnet-attribute --subnet-id subnet-b46032ec --map-public-ip-on-launch
+
+aws ec2 create-key-pair --key-name MyKeyPair --query "KeyMaterial" --output text > MyKeyPair.pem
+
+chmod 400 MyKeyPair.pem
+
+aws ec2 create-security-group --group-name SSHAccess --description "Security group for SSH access" --vpc-id vpc-2f09a348
+
+aws ec2 authorize-security-group-ingress --group-id sg-e1fb8c9a --protocol tcp --port 22 --cidr 0.0.0.0/0
+
+aws ec2 describe-instances --instance-id i-0146854b7443af453 --query "Reservations[*].Instances[*].{State:State.Name,Address:PublicIpAddress}"
+
+ssh -i "MyKeyPair.pem" ec2-user@52.87.168.235
+
+Step 4: Clean up
+After you've verified that you can connect to your instance, you can terminate it if you no longer need it. To do this, use the terminate-instances command. To delete the other resources you've created in this example, use the following commands in their listed order:
+
+Delete your security group:
+
+aws ec2 delete-security-group --group-id sg-e1fb8c9a
+Delete your subnets:
+
+aws ec2 delete-subnet --subnet-id subnet-b46032ec
+aws ec2 delete-subnet --subnet-id subnet-a46032fc
+Delete your custom route table:
+
+aws ec2 delete-route-table --route-table-id rtb-c1c8faa6
+Detach your internet gateway from your VPC:
+
+aws ec2 detach-internet-gateway --internet-gateway-id igw-1ff7a07b --vpc-id vpc-2f09a348
+Delete your internet gateway:
+
+aws ec2 delete-internet-gateway --internet-gateway-id igw-1ff7a07b
+Delete your VPC:
+
+aws ec2 delete-vpc --vpc-id vpc-2f09a348
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
